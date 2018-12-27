@@ -24,3 +24,6 @@ int main(void)
         }
         return 0;
 }
+
+/*size_t 是一种数据类型，近似于无符号整型，但容量范围一般大于 int 和 unsigned。这里使用 size_t 
+是为了保证 arraysize 变量能够有足够大的容量来储存可能大的数组。*/
