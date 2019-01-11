@@ -31,7 +31,9 @@ d:8(指针根据最大字节数来分配)    sum=16+8=24
 结果为24字节。
 
 改变下顺序
-```#include<stdio.h>
+
+```
+#include<stdio.h>
  
 typedef struct node
 {
@@ -47,5 +49,6 @@ int main(int argc, char const *argv[])
 	printf("字节数为：%lu\n",sizeof(n) );
 	return 0;
 }
+```
 
 输出字节：1+(7)+8+4+(4)+8=32
