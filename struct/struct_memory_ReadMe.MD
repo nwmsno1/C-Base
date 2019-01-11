@@ -47,3 +47,5 @@ int main(int argc, char const *argv[])
 	printf("字节数为：%lu\n",sizeof(n) );
 	return 0;
 }
+
+输出字节：1+(7)+8+4+(4)+8=32
