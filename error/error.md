@@ -20,7 +20,7 @@ perror()和strerrot()函数可以把errno的值转化为有意义的字符输出
     //用法2：使用perror函数，把error的值转化为有意义的字符提示。
         if(errno != 0){
             perror("opendir: ");
-    //        exit(EXIT_FAILURE);
+    //       exit(EXIT_FAILURE);
         }
 
     //用法3：类似用法2，但使用strerror函数。
