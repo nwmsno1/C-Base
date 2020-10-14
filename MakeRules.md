@@ -74,3 +74,92 @@ $ make
 
 上面代码执行Makefile文件的第一个目标。
 
+## 2.3 前置条件（prerequisites）
+前置条件通常是一组文件名，之间用空格分隔。它指定了"目标"是否重新构建的判断标准：只要有一个前置文件不存在，或者有过更新（前置文件的last-modification时间戳比目标的时间戳新），"目标"就需要重新构建。
+
+```
+result.txt: source.txt
+    cp source.txt result.txt
+```
+
+上面代码中，构建 result.txt 的前置条件是 source.txt 。如果当前目录中，source.txt 已经存在，那么make result.txt可以正常运行，否则必须再写一条规则，来生成 source.txt 。
+
+```
+source.txt:
+    echo "this is the source" > source.txt
+```
+
+上面代码中，source.txt后面没有前置条件，就意味着它跟其他文件都无关，只要这个文件还不存在，每次调用make source.txt，它都会生成。
+
+```
+$ make result.txt
+$ make result.txt
+```
+
+上面命令连续执行两次make result.txt。第一次执行会先新建 source.txt，然后再新建 result.txt。第二次执行，Make发现 source.txt 没有变动（时间戳晚于 result.txt），就不会执行任何操作，result.txt 也不会重新生成。
+
+如果需要生成多个文件，往往采用下面的写法。
+
+```
+source: file1 file2 file3
+```
+
+上面代码中，source 是一个伪目标，只有三个前置文件，没有任何对应的命令。
+
+```
+$ make source
+```
+
+执行make source命令后，就会一次性生成 file1，file2，file3 三个文件。这比下面的写法要方便很多。
+
+```
+$ make file1
+$ make file2
+$ make file3
+```
+
+## 2.4 命令（commands）
+命令（commands）表示如何更新目标文件，由一行或多行的Shell命令组成。它是构建"目标"的具体指令，它的运行结果通常就是生成目标文件。
+每行命令之前必须有一个tab键。如果想用其他键，可以用内置变量.RECIPEPREFIX声明。
+
+```
+.RECIPEPREFIX = >
+all:
+> echo Hello, world
+```
+
+上面代码用.RECIPEPREFIX指定，大于号（>）替代tab键。所以，每一行命令的起首变成了大于号，而不是tab键。
+
+需要注意的是，每行命令在一个单独的shell中执行。这些Shell之间没有继承关系。
+
+```
+var-lost:
+    export foo=bar
+    echo "foo=[$$foo]"
+```
+
+上面代码执行后（make var-lost），取不到foo的值。因为两行命令在两个不同的进程执行。一个解决办法是将两行命令写在一行，中间用分号分隔。
+
+```
+var-kept:
+    export foo=bar; echo "foo=[$$foo]"
+```
+
+另一个解决办法是在换行符前加反斜杠转义。
+
+```
+var-kept:
+    export foo=bar; \
+    echo "foo=[$$foo]"
+```
+
+最后一个方法是加上.ONESHELL:命令。
+
+```
+.ONESHELL:
+var-kept:
+    export foo=bar; 
+    echo "foo=[$$foo]"
+```
+
+# 三、Makefile文件的语法
